@@ -32,8 +32,8 @@ typedef struct statistic {
 
 void mouth_init(s_mouth *mouth, int name);
 void year_init(s_year *year, int name);
-void get_all_stat(char *filename, s_statistic *statistic, int *years_ctn);
-s_statistic *init_list(s_year *data);
+s_statistic *get_all_stat(char *filename);
+s_statistic *init_list(s_year data);
 void year_add(s_statistic **pSStatistic, s_year *data);
 
 #endif //FINAL_HW_STAT_LIB_H

@@ -24,10 +24,12 @@ void year_init(s_year *year, int name){
     }
 }
 
-s_statistic *init_list(s_year *data){
+s_statistic *init_list(s_year data){
     s_statistic *new;
-    new = malloc(sizeof(s_year));
-    new->year = *data;
+
+    new = malloc(sizeof(s_statistic));
+    new->next = NULL;
+    new->year = data;
 
     return new;
 }
@@ -39,22 +41,20 @@ void year_add(s_statistic **pSStatistic, s_year *data){
     tmp->next = NULL;
 
     (*pSStatistic)->next = tmp;
-    *pSStatistic = tmp;
+    //*pSStatistic = tmp;
 
 }
 
 
 
-void get_all_stat(char *filename, s_statistic *statistic, int *years_ctn){
-    int Y = 1;
+s_statistic *get_all_stat(char *filename){
     FILE *fp;
     int get_line = 0;
     if ((fp = fopen(filename, "r")) == NULL)
     {
         printf("Не удалось открыть файл");
     }
-    float avg = 0;
-
+    s_statistic *statistic = NULL;
 
     while (get_line != EOF) {
         int year;
@@ -63,25 +63,30 @@ void get_all_stat(char *filename, s_statistic *statistic, int *years_ctn){
         int hour;
         int minute;
         int temperature;
-        s_year *year_pointer = NULL;
+        s_statistic *tmp_stat;
+        s_year year_pointer;
         get_line = fscanf(fp, "%d;%d;%d;%d;%d;%d", &year, &mouth, &day, &hour, &minute, &temperature); // NOLINT(cert-err34-c)
-        for (int i = 0; i < Y; i++) {
-            if(years_stat[i].name == year){
-                year_pointer = &years_stat[i];
+        if(statistic == NULL){
+            year_init(&year_pointer, year);
+            statistic = init_list(year_pointer);
+        }
+        tmp_stat = statistic;
+        while (tmp_stat->next != NULL){
+            if(tmp_stat->year.name == year){
+                year_pointer = tmp_stat->year;
                 break;
             } else{
-                Y++;
-                if(sizeof(*years_stat) < sizeof(s_year[Y - 1])){
-                    years_stat = realloc(years_stat, sizeof(s_year) * 2);
+                if(tmp_stat->next == NULL){
+                    year_init(&tmp_stat->year, year);
+                    year_pointer = tmp_stat->year;
+                    break;
                 }
-                year_init(&years_stat[i], year);
-                year_pointer = &years_stat[i];
-                break;
             }
+            tmp_stat = tmp_stat->next;
         }
-        year_pointer->data_ctr ++;
-        year_pointer->summ_temp += temperature;
-        s_mouth *mouth_ptr = &year_pointer->mouth[5];
+        year_pointer.data_ctr ++;
+        year_pointer.summ_temp += temperature;
+        s_mouth *mouth_ptr = &year_pointer.mouth[5];
 
         if(mouth == 6){
             //printf("Year %d Mouth %d day %d Hour %d Minute %d Temp %d\n", year, mouth, day, hour, minute, temperature);
@@ -95,6 +100,6 @@ void get_all_stat(char *filename, s_statistic *statistic, int *years_ctn){
         }
     }
     fclose(fp);
-    *years_ctn = Y - 1;
+    return statistic;
 }
 

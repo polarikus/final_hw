@@ -5,12 +5,20 @@
 
 int main() {
     char name[] = "temp.csv";
-    int years_ctn = 0;
-    s_statistic *statistic;
-    get_all_stat(name, statistic, &years_ctn);
+    //s_year year;
+    s_statistic *statistic = get_all_stat(name);
+    //year_init(&year, 2021);
+    //statistic = init_list(year);
+    //year_init(&year, 2022);
+    //year_add(&statistic, &year);
 
-    for (int i = 0; i < years_ctn; i++) {
-        //printf("name %d\n", years[i].mouth[5].summ_temp);
+    s_statistic *tmp = statistic;
+
+    while (tmp != NULL){
+        printf("name %d\n", tmp->year.name);
+        tmp = tmp->next;
     }
+
+
     return 0;
 }
